@@ -9,7 +9,7 @@ Computer Science
 #include <time.h>
 
 /*Allows the user to set up how many attempts they would like per game
-Precondition:
+Precondition: 
 - The user enters a number for how many attempts they want.
 
 Postcondition:
