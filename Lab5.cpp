@@ -1,15 +1,6 @@
 /*
 Levi Reising
 Computer Science
-
-Precondition:
-1. The user needs to put a valid number of attempts they want
-2. It will need to create a random number between 0 and 100.
-
-Postcondition
-- The user is told whether they won or lost each game.
-- The user is given the option to play again.
-- If the user chooses not to play again, it displays the total wins and losses.
 */
 
 
@@ -17,32 +8,85 @@ Postcondition
 #include <stdlib.h>
 #include <time.h>
 
-//Allows the user to set up how many attempts they would like per game
-void setup(int& repeat, int& attemptsNum);
+/*Allows the user to set up how many attempts they would like per game
+Precondition:
+- The user enters a number for how many attempts they want.
 
-//The section where the user guesses the number
-void guesses(int attempts, int attemptsNum, int& guessNum, int& ranNum);
+Postcondition:
+- The number of attempts is set between 1 and max.
+- Repeat is reset to 2 so the user must choose whether to play again.*/
+void setup(int& repeat, int& attemptsNum, int& max);
 
-//Counts the number of wins and losses the user has obtained.
+
+/*The section where the user guesses the number
+Precondition:
+- The number of attempts was created by setup().
+- A random number must be generated between 0 and 100.
+
+Postcondition:
+- The user has used all their attempts or guessed the correct number.
+- The final guess and random number are available to the next void to use.*/
+void guesses(int attempts, int attemptsNum, int& guessNum, int& ranNum, int max);
+
+
+/*Counts the number of wins and losses the user has obtained.
+Precondition:
+- The user must have finished guessing.
+- The final guess and random number must be available.
+
+Postcondition:
+- The user's win or loss is determined.
+- The appropriate win or loss counter is increased by one.*/
 void counter(int& losses, int& wins, int guessNum, int ranNum);
 
-//Gives the user the option to play again.
+
+/*Gives the user the option to play again.
+Precondition:
+- A game must have finished.
+- The user must be asked whether they want to play again.
+
+Postcondition:
+- Repeat is set to 1 if the user wants to play again.
+- Repeat is set to 0 if the user wants to quit.
+- Invalid answers are deleted and question is asked again.*/
 void again(int& repeat);
 
-//Displays how many times you won and lost.
+
+/*Displays how many times you won and lost.
+Precondition:
+- The total number of wins and losses variables must be done.
+
+Postcondition:
+- The total wins and losses are displayed to the user.*/
 void WtoL(int wins, int losses);
 
 
-//The void functions below this will be inside other void functions.
-//These two let you know if your number was too high or too low.
+/*The void functions below this will be inside other void functions.
+Precondition:
+- The user's guess must be lower/higher than the random number.
+
+Postcondition:
+- One random message indicating that the guess was too low/high is displayed.*/
 void incorrectLow();
 void incorrectHigh();
 
-//This displays 10 different statements based on if you won or lost
+
+/*This displays 10 different statements based on if you won or lost
+Precondition:
+- The user must have/(have not) guessed the correct number.
+
+Postcondition:
+- One random winning/losing message is displayed.*/
 void win();
 void lose();
 
-//These give 5 different play again statements each for if you won or lost.
+
+/*These give 5 different play again statements each for if you won or lost.
+Precondition:
+- The user must have won or lost the previous game.
+
+Postcondition:
+- One random message asking to play again is displayed.*/
 void replayW();
 void replayL();
 
@@ -62,14 +106,15 @@ int main()//--------------------------------------------------------------------
 	int repeat = 2;
 	int losses = 0;
 	int wins = 0;
+	int max = 20;
 
 	cout << "You will need to pick a number from 0-100" << endl;
 	cout << "Just know, if the goblin talks to you, do the opposite of what it says \n" << endl;
 	//This allows them to play the game multiple times
 	do
 	{
-		setup(repeat, attemptsNum);				
-		guesses(attempts, attemptsNum, guessNum, ranNum);		
+		setup(repeat, attemptsNum, max);				
+		guesses(attempts, attemptsNum, guessNum, ranNum, max);		
 		counter(losses, wins, guessNum, ranNum);		
 		again(repeat);
 
@@ -81,12 +126,12 @@ int main()//--------------------------------------------------------------------
 
 //Repeat is changed from whatever it was before, to 2 so it needs &.
 //AttemptsNum will be used later on in other functions, so it also needs &.
-void setup(int& repeat, int& attemptsNum)//-------------------------------------------------------------------------------------------------------
+void setup(int& repeat, int& attemptsNum, int& max)//-------------------------------------------------------------------------------------------------------
 {
 	//Forces them to change repeat to 1 or 0 at the end.
 	repeat = 2;
 
-	cout << "How many attempts would you like? (Max of 20): ";
+	cout << "How many attempts would you like? (Max of " << max << "): ";
 	cin >> attemptsNum;
 
 	//If what they entered isnt a number
@@ -101,17 +146,17 @@ void setup(int& repeat, int& attemptsNum)//-------------------------------------
 		cin >> attemptsNum;
 	}
 
-	//If they pick a number bigger than 20, it changes to 20
-	if (attemptsNum > 20)
+	//If they pick a number bigger than the max, it changes to the max
+	if (attemptsNum > max)
 	{
-		cout << "Well you're only getting 20" << endl;
-		attemptsNum = 20;
+		cout << "Well you're only getting" << max << endl;
+		attemptsNum = max;
 	}
 	else if (attemptsNum < 1)
 	{
-		//They get a random number between 1-20 if they pick a number less than 1
+		//They get a random number between 1-max if they pick a number less than 1
 		cout << "Really? You're playing if you want to or not. Since you wont pick I will. You're getting " ;
-		attemptsNum = rand() % 20 + 1;
+		attemptsNum = rand() % max + 1;
 		cout << attemptsNum << " attempts." << endl;
 		
 	}
@@ -120,7 +165,7 @@ void setup(int& repeat, int& attemptsNum)//-------------------------------------
 //Attempts wont be used later so it wont need &.
 //AttemptsNum will be used later, but will be changed, so it doesnt need &.
 //guessNum and ranNum will be used so it needs &.
-void guesses(int attempts, int attemptsNum, int& guessNum, int& ranNum)//------------------------------------------------------------------------
+void guesses(int attempts, int attemptsNum, int& guessNum, int& ranNum, int max)//------------------------------------------------------------------------
 {
 	//Creates a random number before the loop begins so the number stays the same
 	ranNum = rand() % 101;
@@ -140,7 +185,7 @@ void guesses(int attempts, int attemptsNum, int& guessNum, int& ranNum)//-------
 		}
 		if (guessNum == ranNum)
 		{
-			attempts = attempts + 20;
+			attempts = attempts + max;
 		}
 		else if (guessNum > ranNum && attempts != attemptsNum - 1)
 			//If they have one more try, it wont say if its too low/high
